@@ -1,104 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda</title>
+  <link rel="stylesheet" href="estilização.css">
 </head>
 <body>
-    <input id="tarefa" type="text" placeholder="Insira aqui sua tarefa"></input>
-    <input id="seleciona-data" type="date" />
-    <button onclick="adicionarTarefa()">Adicionar Tarefa</button>
-    <div id="lista-de-tarefas"></div>
-    <script>
-        let afazeres;
+  <h1>Agenda</h1>
+  <input id="tarefa" type="text" placeholder="Insira aqui sua tarefa">
+  <input id="seleciona-data" type="date" />
+  <button onclick="adicionarTarefa()">Adicionar Tarefa</button>
+  <div id="lista-de-tarefas"></div>
 
-        if(Array.isArray(JSON.parse(localStorage.getItem("afazeres")))){
-            afazeres = JSON.parse(localStorage.getItem("afazeres"))
-        }else{
-        afazeres = [
-            {
-                nome: "Lavar louça",
-                data: "15-08-2025",
-                id: "id1"
-            },
-            {
-                nome: "Lavar banheiro",
-                data: "20-08-2025",
-                id: "id2"
-            },
-            {
-                nome: "Estender roupa",
-                data: "25-08-2025",
-                id: "id3"
-            },
-            {
-                nome: "Assistir o jogo do Corinthians",
-                data: "16-08-2025",
-                id: "id4"
-            }
-        ];
-        };
-      let salvartarefas = () => localStorage.setItem("afazeres", JSON.stringify(afazeres));
-      //console.log(json.stringify(JSON.stringify()))
-      salvartarefas();  
+  <script>
+    let afazeres;
 
-        let adicionarTarefa = () => {
-            const campoTarefa = document.getElementById("tarefa");
-            const tarefa = campoTarefa.value;
+    if(Array.isArray(JSON.parse(localStorage.getItem("afazeres")))){
+        afazeres = JSON.parse(localStorage.getItem("afazeres"))
+    }else{
+      afazeres = [
+          { nome: "Lavar louça", data: "2025-08-15", id: "id1" },
+          { nome: "Lavar banheiro", data: "2025-08-20", id: "id2" },
+          { nome: "Estender roupa", data: "2025-08-25", id: "id3" },
+          { nome: "Assistir o jogo do Corinthians", data: "2025-08-16", id: "id4" }
+      ];
+    };
 
-            const campoData = document.getElementById("seleciona-data");
-            const prazo = campoData.value;
+    let salvartarefas = () => localStorage.setItem("afazeres", JSON.stringify(afazeres));
+    salvartarefas();  
 
-            const cron = "" + new Date().getTime();
+    let adicionarTarefa = () => {
+        const campoTarefa = document.getElementById("tarefa");
+        const tarefa = campoTarefa.value;
 
-            afazeres.push(
-                {
-                    nome: tarefa,
-                    data: prazo,
-                    id: cron
-                }
-            )
-            
-            rendenrizar();
+        const campoData = document.getElementById("seleciona-data");
+        const prazo = campoData.value;
+
+        if(tarefa === "" || prazo === ""){
+          alert("Preencha a tarefa e a data!");
+          return;
         }
-        //Esse código serve para remover uma tarefa da lista afazeres quando o 
-        // botão correspondente for clicado.
-        let apagarTarefa = (evento) => {
-            const botaoapagar = evento.target;
-            const idaserapagado = botaoapagar.id;
-            afazeres = afazeres.filter((tarefa)=> {
-                if( tarefa.id === idaserapagado){
-                    return false;
-                }else{
-                    return true;
-                }
-            });
-            salvartarefas();
-            rendenrizar();
-        };
 
-        let rendenrizar = () => {
-            document.getElementById("lista-de-tarefas").innerHTML = "";
-            afazeres.forEach(
-                (tarefa) => {
-                    const elemento = document.createElement("div");
-                    elemento.innerHTML = tarefa.nome + " " + tarefa.data;
+        const cron = "" + new Date().getTime();
 
-                    const botaoapagar = document.createElement("button");
-                    botaoapagar.innerText = "apagar";
-                    botaoapagar.style = "margin-left: 12px";
-                    botaoapagar.id = tarefa.id;
-                    //botão de apagar tarefa
-                    botaoapagar.onclick = apagarTarefa;
-                    elemento.appendChild( botaoapagar )
-    
-                    const listaDeTarefas = document.getElementById("lista-de-tarefas");
-                    listaDeTarefas.appendChild( elemento );
-                }
-            );
-        }
+        afazeres.push({ nome: tarefa, data: prazo, id: cron });
+        
+        salvartarefas();
         rendenrizar();
-    </script>
+
+        campoTarefa.value = "";
+        campoData.value = "";
+    }
+
+    let apagarTarefa = (evento) => {
+        const botaoapagar = evento.target;
+        const idaserapagado = botaoapagar.id;
+        afazeres = afazeres.filter((tarefa)=> tarefa.id !== idaserapagado);
+        salvartarefas();
+        rendenrizar();
+    };
+
+    let rendenrizar = () => {
+        document.getElementById("lista-de-tarefas").innerHTML = "";
+        afazeres.forEach((tarefa) => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const conteudo = document.createElement("div");
+            conteudo.className = "conteudo";
+
+            const titulo = document.createElement("div");
+            titulo.className = "titulo";
+            titulo.innerText = tarefa.nome;
+
+            const data = document.createElement("div");
+            data.className = "data";
+            data.innerText = "Prazo: " + tarefa.data;
+
+            conteudo.appendChild(titulo);
+            conteudo.appendChild(data);
+
+            const botaoapagar = document.createElement("button");
+            botaoapagar.innerText = "Apagar";
+            botaoapagar.id = tarefa.id;
+            botaoapagar.onclick = apagarTarefa;
+
+            card.appendChild(conteudo);
+            card.appendChild(botaoapagar);
+
+            const listaDeTarefas = document.getElementById("lista-de-tarefas");
+            listaDeTarefas.appendChild(card);
+        });
+    }
+    rendenrizar();
+  </script>
 </body>
 </html>
+    
