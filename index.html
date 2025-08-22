@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+</head>
+<body>
+    <input id="tarefa" type="text" placeholder="Insira aqui sua tarefa"></input>
+    <input id="seleciona-data" type="date" />
+    <button onclick="adicionarTarefa()">Adicionar Tarefa</button>
+    <div id="lista-de-tarefas"></div>
+    <script>
+        let afazeres;
+
+        if(Array.isArray(JSON.parse(localStorage.getItem("afazeres")))){
+            afazeres = JSON.parse(localStorage.getItem("afazeres"))
+        }else{
+        afazeres = [
+            {
+                nome: "Lavar louça",
+                data: "15-08-2025",
+                id: "id1"
+            },
+            {
+                nome: "Lavar banheiro",
+                data: "20-08-2025",
+                id: "id2"
+            },
+            {
+                nome: "Estender roupa",
+                data: "25-08-2025",
+                id: "id3"
+            },
+            {
+                nome: "Assistir o jogo do Corinthians",
+                data: "16-08-2025",
+                id: "id4"
+            }
+        ];
+        };
+      let salvartarefas = () => localStorage.setItem("afazeres", JSON.stringify(afazeres));
+      //console.log(json.stringify(JSON.stringify()))
+      salvartarefas();  
+
+        let adicionarTarefa = () => {
+            const campoTarefa = document.getElementById("tarefa");
+            const tarefa = campoTarefa.value;
+
+            const campoData = document.getElementById("seleciona-data");
+            const prazo = campoData.value;
+
+            const cron = "" + new Date().getTime();
+
+            afazeres.push(
+                {
+                    nome: tarefa,
+                    data: prazo,
+                    id: cron
+                }
+            )
+            
+            rendenrizar();
+        }
+        //Esse código serve para remover uma tarefa da lista afazeres quando o 
+        // botão correspondente for clicado.
+        let apagarTarefa = (evento) => {
+            const botaoapagar = evento.target;
+            const idaserapagado = botaoapagar.id;
+            afazeres = afazeres.filter((tarefa)=> {
+                if( tarefa.id === idaserapagado){
+                    return false;
+                }else{
+                    return true;
+                }
+            });
+            salvartarefas();
+            rendenrizar();
+        };
+
+        let rendenrizar = () => {
+            document.getElementById("lista-de-tarefas").innerHTML = "";
+            afazeres.forEach(
+                (tarefa) => {
+                    const elemento = document.createElement("div");
+                    elemento.innerHTML = tarefa.nome + " " + tarefa.data;
+
+                    const botaoapagar = document.createElement("button");
+                    botaoapagar.innerText = "apagar";
+                    botaoapagar.style = "margin-left: 12px";
+                    botaoapagar.id = tarefa.id;
+                    //botão de apagar tarefa
+                    botaoapagar.onclick = apagarTarefa;
+                    elemento.appendChild( botaoapagar )
+    
+                    const listaDeTarefas = document.getElementById("lista-de-tarefas");
+                    listaDeTarefas.appendChild( elemento );
+                }
+            );
+        }
+        rendenrizar();
+    </script>
+</body>
+</html>
